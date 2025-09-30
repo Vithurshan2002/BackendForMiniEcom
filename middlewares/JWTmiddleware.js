@@ -11,7 +11,7 @@ const jwt = require("jsonwebtoken");
           return res.json({ valid:false});
         } else {
           const token = jwt.sign({ email: decodedata.email }, process.env.SECREAT_KEY, {
-            expiresIn: "1m",
+            expiresIn: "10m",
           });
 
           res.cookie("Token", token, {
