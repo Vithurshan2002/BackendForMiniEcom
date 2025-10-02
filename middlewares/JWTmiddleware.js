@@ -15,7 +15,7 @@ const jwt = require("jsonwebtoken");
           });
 
           res.cookie("Token", token, {
-            maxAge: 60000,
+            maxAge: 10*60*1000,
             httpOnly: true
           });
 

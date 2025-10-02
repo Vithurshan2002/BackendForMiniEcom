@@ -1,6 +1,7 @@
 const userDetailmodel = require("../models/UserInforation");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const userContactsmodel = require("../models/ContactMembers");
 //register the student
 
 //i ue nodemaier for login and reset puposes..so insted of wrte twice i write in common place
@@ -85,17 +86,17 @@ exports.UserLogin = async (req, res, next) => {
           );
 
           res.cookie("Token", token, {
-            maxAge: 60000,
+            maxAge: 10 * 60 * 1000,
             httpOnly: true,
             secure: true,
           });
           res.cookie("RefreshToken", Refreshtoken, {
-            maxAge: 300000,
+            maxAge: 30 * 60 * 1000,
             httpOnly: true,
             secure: true,
           });
 
-          res.status(200).json({ message:user});
+          res.status(200).json({ message: user });
         } else {
           res.status(400).json({ message: "Password Invalid" });
         }
@@ -165,5 +166,53 @@ exports.Resetpassword = async (req, res, next) => {
     }
   } catch (error) {
     return res.status(400).json({ message: error.message });
+  }
+};
+
+//logout
+exports.Logout = (req,res,next) => {
+  res.clearCookie("Token", {
+    httpOnly: true,
+    secure: true,
+  });
+
+  res.clearCookie("RefreshToken", {
+    httpOnly: true,
+    secure: true,
+  });
+
+  return res.status(200).json({ message: "Logged out successfully" });
+};
+
+//user messages
+exports.UserMessages = async (req, res, next) => {
+  const { fullname, email, contact, message } = req.body;
+  try {
+    if (fullname && email && contact && message) {
+      const userdata = await userContactsmodel.create({
+        fullname: fullname,
+        email: email,
+        contactno: contact,
+        message: message,
+      });
+      if (userdata) {
+        return res
+          .status(200)
+          .json({ success: true, message: "Successfully Sent." });
+      } else {
+        return res
+          .status(400)
+          .json({ success: false, message: "message Not  Sent." });
+      }
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "Enter the full details" });
+    }
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+      message: `Message Not end :${error.message}`,
+    });
   }
 };
