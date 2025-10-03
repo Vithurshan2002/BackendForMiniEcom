@@ -6,6 +6,7 @@ require("dotenv").config();
 const app = express();
 const authRoutes=require('./routes/userRoutes');
 const FoodRoutes=require("./routes/FoodItemsRoute")
+const OrderRoutes=require("./routes/OrderRoutes")
 
 app.use(cookieparser());
 app.use(cors({
@@ -17,6 +18,7 @@ app.use(express.json());
 
 app.use('/Bitza',authRoutes);
 app.use("/Bitza",FoodRoutes)
+app.use("/Bitza",OrderRoutes)
 
 
 
