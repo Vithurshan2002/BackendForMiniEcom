@@ -1,4 +1,6 @@
 const Adminmodel = require("../models/Adminmodel");
+const userContactsmodel = require("../models/ContactMembers");
+const shippingmodal = require("../models/Shippingdetails");
 
 //admin registration
 exports.registerAdmin = async (req, res, next) => {
@@ -6,6 +8,10 @@ exports.registerAdmin = async (req, res, next) => {
   try {
     if (!Firstname || !email || !phonenumber || !password) {
       return res.status(404).json({ message: "All the fields are required" });
+    }
+    const useralreadyexist = await Adminmodel.findOne();
+    if (useralreadyexist) {
+      return res.status(404).json({ message: "Email Already Exists." });
     }
     const data = await Adminmodel.create({
       Firstname,
@@ -23,22 +29,43 @@ exports.registerAdmin = async (req, res, next) => {
   }
 };
 
-
-
 // Admin login
 exports.LoginAdmin = async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    if ( !email || !password) {
+    if (!email || !password) {
       return res.status(404).json({ message: "All the fields are required" });
     }
-    const data = await Adminmodel.create({
-    });
-    if (data) {
-      return res.status(200).json({ message: data });
+    const user = await Adminmodel.findOne({ email: email }); //not send password
+    if (!user) {
+      return res.status(404).json({ message: "Email Does Not Exists" });
     }
-    return res.status(400).json({ message: "data not store" });
+    if (user.password === password) {
+      return res.status(200).json({ message: "login successfully" });
+    }
+    return res.status(400).json({ message: "Login Faild!" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
+  }
+};
+
+//get restaurant product information for admin dash board
+exports.getDetails = async (req, res, next) => {
+  try {
+    const usercount = await userContactsmodel.countDocuments();
+    const ordercount = await shippingmodal.countDocuments();
+    const shippingInfor = await shippingmodal.find();
+    tot = 0;
+    const totalincome = shippingInfor.reduce(
+      (acc, item) => acc + Number(item.Totalprice),
+      0
+    );
+    if (usercount && ordercount && shippingInfor) {
+      return res.status(200).json({message:{ usercount, ordercount, totalincome }});
+    } else {
+      return res.status(400).json({ message: "somthing error" });
+    }
+  } catch (error) {
+    return res.status(500).json({ mesage: error.message });
   }
 };

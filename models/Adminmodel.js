@@ -8,7 +8,7 @@ const AdminSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: true
     },
     phonenumber: {
       type: String,
