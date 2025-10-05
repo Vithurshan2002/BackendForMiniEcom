@@ -7,7 +7,7 @@ const app = express();
 const authRoutes=require('./routes/userRoutes');
 const FoodRoutes=require("./routes/FoodItemsRoute")
 const OrderRoutes=require("./routes/OrderRoutes")
-
+const UserDetails=require("./routes/userdeatilsRoutes")
 app.use(cookieparser());
 app.use(cors({
   origin:['http://localhost:5173','http://localhost:5174'],
@@ -19,6 +19,7 @@ app.use(express.json());
 app.use('/Bitza',authRoutes);
 app.use("/Bitza",FoodRoutes)
 app.use("/Bitza",OrderRoutes)
+app.use("/Bitza",UserDetails)
 
 
 

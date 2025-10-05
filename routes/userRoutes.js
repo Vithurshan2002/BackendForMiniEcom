@@ -12,8 +12,14 @@ router.get("/logout",Logout)
 
 // reviews
 router.get("/review",getReviews)
-
 //usermesage from home page
 router.post("/usermessage",UserMessages)
+
+
+
+
+
+
+
 
 module.exports = router;
