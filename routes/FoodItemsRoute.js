@@ -7,6 +7,7 @@ const {
   getallfooditems,
   deleteAfooditem,
   updatefooditem,
+  addFoodItem,
 } = require("../Controllers/FoodController");
 const { varifyuser } = require("../middlewares/JWTmiddleware");
 
@@ -23,5 +24,6 @@ router.get("/getPopularDishes", getPopularDishes);
 router.get("/admin/getallfooditems",getallfooditems);
 router.delete("/admin/deleteafooditem",deleteAfooditem);
 router.put("/admin/updateafooditem",updatefooditem);
+router.post("/admin/addfooditem",addFoodItem);
 
 module.exports = router;

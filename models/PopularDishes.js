@@ -12,7 +12,7 @@ const PopularSchema= new mongoose.Schema({
     },
     rating:{
         type:Number,
-        required:true
+        default:3
     },
     image:{
         type:String,

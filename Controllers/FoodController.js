@@ -156,3 +156,35 @@ exports.updatefooditem = async (req, res) => {
     });
   }
 };
+
+//ADDA FOODITEM BAED ON CATEGORY
+exports.addFoodItem = async (req, res) => {
+  try {
+    const { name, price, image, category } = req.body;
+
+    if (!name || !price || !image || !category) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const categoryModels = {
+      popular: PopularDishesmodel,
+      desserts: Desertsmodel,
+      main: Maincoursesmodel,
+      starters: Startersmodel,
+    };
+
+    const Model = categoryModels[category.toLowerCase()];
+    if (!Model) {
+      return res.status(400).json({ message: "Invalid category" });
+    }
+
+  
+    const newItem = new Model({ name, price, image });
+    await newItem.save();
+
+    res.status(201).json({ message: "Food item added successfully", item: newItem });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

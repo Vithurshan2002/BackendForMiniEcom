@@ -10,7 +10,7 @@ router.post("/addOrder",varifyuser, Addorder)
 //for admin
 
 //get the all order  
-router.get("/admin/getallorder",getallOrder)
+router.get("/admin/getallorder",getallOrder);
 
 //change the order status
 router.put("/admin/updateorder/:id",updateOrderState);

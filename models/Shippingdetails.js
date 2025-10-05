@@ -28,7 +28,7 @@ const shippingSchema = new mongoose.Schema(
     orderItems: [
       {
         name: { type: String, required: true },
-        qty: { type: Number, required: true },
+        qty: { type: Number,default:3},
       },
     ],
     Totalprice: {
