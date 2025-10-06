@@ -9,7 +9,7 @@ exports.registerAdmin = async (req, res, next) => {
     if (!Firstname || !email || !phonenumber || !password) {
       return res.status(404).json({ message: "All the fields are required" });
     }
-    const useralreadyexist = await Adminmodel.findOne();
+    const useralreadyexist = await Adminmodel.findOne({email:email});
     if (useralreadyexist) {
       return res.status(404).json({ message: "Email Already Exists." });
     }
@@ -41,7 +41,7 @@ exports.LoginAdmin = async (req, res, next) => {
       return res.status(404).json({ message: "Email Does Not Exists" });
     }
     if (user.password === password) {
-      return res.status(200).json({ message: "login successfully" });
+      return res.status(200).json({ message:user });
     }
     return res.status(400).json({ message: "Login Faild!" });
   } catch (error) {
