@@ -1,7 +1,7 @@
 const Adminmodel = require("../models/Adminmodel");
-const userContactsmodel = require("../models/ContactMembers");
 const shippingmodal = require("../models/Shippingdetails");
-
+const bcrypt = require("bcrypt");
+const userDetailmodel = require("../models/UserInforation");
 //admin registration
 exports.registerAdmin = async (req, res, next) => {
   const { Firstname, email, phonenumber, address, password } = req.body;
@@ -9,16 +9,20 @@ exports.registerAdmin = async (req, res, next) => {
     if (!Firstname || !email || !phonenumber || !password) {
       return res.status(404).json({ message: "All the fields are required" });
     }
-    const useralreadyexist = await Adminmodel.findOne({email:email});
+    const useralreadyexist = await Adminmodel.findOne({ email: email });
     if (useralreadyexist) {
       return res.status(404).json({ message: "Email Already Exists." });
     }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashpassword = await bcrypt.hash(password, salt);
+
     const data = await Adminmodel.create({
       Firstname,
       email,
       phonenumber,
       address,
-      password,
+      password: hashpassword,
     });
     if (data) {
       return res.status(200).json({ message: data });
@@ -40,8 +44,9 @@ exports.LoginAdmin = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ message: "Email Does Not Exists" });
     }
-    if (user.password === password) {
-      return res.status(200).json({ message:user });
+    const result = await bcrypt.compare(password, user.password);
+    if (result) {
+      return res.status(200).json({ message: user });
     }
     return res.status(400).json({ message: "Login Faild!" });
   } catch (error) {
@@ -52,7 +57,7 @@ exports.LoginAdmin = async (req, res, next) => {
 //get restaurant product information for admin dash board
 exports.getDetails = async (req, res, next) => {
   try {
-    const usercount = await userContactsmodel.countDocuments();
+    const usercount = await userDetailmodel.countDocuments();
     const ordercount = await shippingmodal.countDocuments();
     const shippingInfor = await shippingmodal.find();
     tot = 0;
@@ -61,7 +66,9 @@ exports.getDetails = async (req, res, next) => {
       0
     );
     if (usercount && ordercount && shippingInfor) {
-      return res.status(200).json({message:{ usercount, ordercount, totalincome }});
+      return res
+        .status(200)
+        .json({ message: { usercount, ordercount, totalincome } });
     } else {
       return res.status(400).json({ message: "somthing error" });
     }

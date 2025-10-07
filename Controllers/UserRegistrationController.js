@@ -2,6 +2,7 @@ const userDetailmodel = require("../models/UserInforation");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const userContactsmodel = require("../models/ContactMembers");
+const bcrypt = require("bcrypt");
 //register the student
 
 //i ue nodemaier for login and reset puposes..so insted of wrte twice i write in common place
@@ -19,11 +20,13 @@ exports.UserRegister = async (req, res, next) => {
     if (Firstname && Lastname && email && password) {
       const user = await userDetailmodel.findOne({ email: email });
       if (!user) {
+        const salt = await bcrypt.genSalt(10);
+        const hashpassword = await bcrypt.hash(password, salt);
         const userdata = await userDetailmodel.create({
           Firstname: Firstname,
           Lastname: Lastname,
           email: email,
-          password: password,
+          password: hashpassword,
         });
         console.log(userdata);
         res
@@ -75,7 +78,8 @@ exports.UserLogin = async (req, res, next) => {
         res.status(500).json({ message: "Email is Invalid" });
       } else {
         const pass = user.password;
-        if (pass === password) {
+        const result = await bcrypt.compare(password, pass);
+        if (result) {
           const token = jwt.sign({ email: email }, process.env.SECREAT_KEY, {
             expiresIn: "10m",
           });
@@ -88,12 +92,12 @@ exports.UserLogin = async (req, res, next) => {
           res.cookie("Token", token, {
             maxAge: 10 * 60 * 1000,
             httpOnly: true,
-            secure: true,
+           secure: false
           });
           res.cookie("RefreshToken", Refreshtoken, {
             maxAge: 30 * 60 * 1000,
             httpOnly: true,
-            secure: true,
+           secure: false
           });
 
           res.status(200).json({ message: user });
@@ -170,15 +174,17 @@ exports.Resetpassword = async (req, res, next) => {
 };
 
 //logout
-exports.Logout = (req,res,next) => {
+exports.Logout = (req, res, next) => {
   res.clearCookie("Token", {
     httpOnly: true,
-    secure: true,
+    secure: false
+  
   });
 
   res.clearCookie("RefreshToken", {
     httpOnly: true,
-    secure: true,
+    secure: false
+   
   });
 
   return res.status(200).json({ message: "Logged out successfully" });
