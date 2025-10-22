@@ -46,7 +46,7 @@ const shippingSchema = new mongoose.Schema(
     },
     deliveryDate: {
       type: Date,
-      default: () => new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      default: () => new Date(Date.now() + 2 * 60 * 60 * 1000), // 2 hours from now
     },
 
     isPaid: { type: Boolean, default: false },

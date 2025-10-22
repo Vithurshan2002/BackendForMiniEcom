@@ -61,10 +61,11 @@ exports.getDetails = async (req, res, next) => {
     const ordercount = await shippingmodal.countDocuments();
     const shippingInfor = await shippingmodal.find();
     tot = 0;
-    const totalincome = shippingInfor.reduce(
+    const totRounded = shippingInfor.reduce(
       (acc, item) => acc + Number(item.Totalprice),
       0
     );
+    const totalincome=totRounded.toFixed(2)
     if (usercount && ordercount && shippingInfor) {
       return res
         .status(200)

@@ -28,7 +28,7 @@ exports.UserRegister = async (req, res, next) => {
           email: email,
           password: hashpassword,
         });
-        console.log(userdata);
+     
         res
           .status(200)
           .json({ success: true, message: "Successfully Registered." });
