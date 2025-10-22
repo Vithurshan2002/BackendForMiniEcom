@@ -12,7 +12,7 @@ const AdminDetails = require("./routes/adminRoute");
 app.use(cookieparser());
 app.use(
   cors({
-    origin: ["https://bitza-restaurant.vercel.app", "http://localhost:5174"],
+    origin: ["https://btza-restarurant.onrender.com", "http://localhost:5174"],
     credentials: true,
   })
 );
