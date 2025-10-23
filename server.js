@@ -12,7 +12,7 @@ const AdminDetails = require("./routes/adminRoute");
 app.use(cookieparser());
 app.use(
   cors({
-    origin: ["https://bitza-ecom.vercel.app"],
+    origin: ["https://bitza-ecom.vercel.app","https://admindashboard-for-ecomerse-bitza.onrender.com"],
     credentials: true,
   })
 );
