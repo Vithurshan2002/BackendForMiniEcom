@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
   if (refreshToken) {
     jwt.verify(
       refreshToken,
-      process.env.SECREAT_KEY_Refresh,
+      process.env.SECREAT_KEY_REFRESH,
       (error, decodedata) => {
         if (error) {
           return res.json({ valid:false});

@@ -31,7 +31,7 @@ app.listen(process.env.PORT || 4500, () => {
 
 //Mongodb connection
 const mongoDB = mongoose
-  .connect(process.env.CLOUD_MONGO_url)    /*  `${process.env.MONGO_URL}/BitZa` */
+  .connect(process.env.CLOUD_MONGO_URL)    /*  `${process.env.MONGO_URL}/BitZa` */
   .then(() => {
     console.log("database successfully connected");
   })

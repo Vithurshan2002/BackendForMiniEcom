@@ -88,7 +88,7 @@ exports.UserLogin = async (req, res, next) => {
           });
           const Refreshtoken = jwt.sign(
             { email: email },
-            process.env.SECREAT_KEY_Refresh,
+            process.env.SECREAT_KEY_REFRESH,
             { expiresIn: "30m" }
           );
 
