@@ -4,7 +4,7 @@ const { varifyuser } = require('../middlewares/JWTmiddleware');
 const router=express.Router();
 
 //add the order
-router.post("/addOrder",varifyuser, Addorder)
+router.post("/addOrder", Addorder)
 
 
 //for admin
