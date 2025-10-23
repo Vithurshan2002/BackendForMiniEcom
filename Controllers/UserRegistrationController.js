@@ -133,7 +133,7 @@ exports.Forgotpassword = async (req, res, next) => {
         from: process.env.USER,
         to: email,
         subject: "Forgotpassword",
-        text: `http://localhost:5173/resetPassword/${tokens}`,
+        text: `https://bitza-ecom.vercel.app/resetPassword/${tokens}`,
       };
 
       transporter.sendMail(mailOptions, function (error, info) {
