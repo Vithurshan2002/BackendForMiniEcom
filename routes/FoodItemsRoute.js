@@ -14,9 +14,9 @@ const { varifyuser } = require("../middlewares/JWTmiddleware");
 const router = express.Router();
 
 //for customers routes
-router.get("/getStarters",varifyuser,getStarters);
-router.get("/getMainCourses",varifyuser, getMainCourses);
-router.get("/getDesserts",varifyuser, getDesserts);
+router.get("/getStarters",getStarters);
+router.get("/getMainCourses", getMainCourses);
+router.get("/getDesserts", getDesserts);
 router.get("/getPopularDishes", getPopularDishes);
 
 
