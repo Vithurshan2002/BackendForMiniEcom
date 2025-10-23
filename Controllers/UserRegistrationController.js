@@ -127,7 +127,7 @@ exports.Forgotpassword = async (req, res, next) => {
       }
 
       const tokens = jwt.sign({ email: email }, process.env.NEW_SECREAT_KEY, {
-        expiresIn: "2m",
+        expiresIn: "5m",
       });
       let mailOptions = {
         from: process.env.USER,
