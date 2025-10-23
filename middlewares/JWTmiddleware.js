@@ -16,7 +16,9 @@ const jwt = require("jsonwebtoken");
 
           res.cookie("Token", token, {
             maxAge: 10*60*1000,
-            httpOnly: true
+            httpOnly: true,
+            secure: true, 
+            sameSite: "none",
           });
 
           req.emailu = decodedata.email;

@@ -95,12 +95,14 @@ exports.UserLogin = async (req, res, next) => {
           res.cookie("Token", token, {
             maxAge: 10 * 60 * 1000,
             httpOnly: true,
-            secure: false,
+            secure: true,
+            sameSite: "none",
           });
           res.cookie("RefreshToken", Refreshtoken, {
             maxAge: 30 * 60 * 1000,
             httpOnly: true,
-            secure: false,
+            secure: true,
+            sameSite: "none",
           });
 
           res.status(200).json({ message: user });
@@ -162,7 +164,7 @@ exports.Resetpassword = async (req, res, next) => {
     const decodedata = jwt.verify(token, process.env.NEW_SECREAT_KEY);
 
     const salt = await bcrypt.genSalt(10);
-    const encreptedpassword = await bcrypt.hash(password,salt);
+    const encreptedpassword = await bcrypt.hash(password, salt);
 
     const user = await userDetailmodel.findOneAndUpdate(
       { email: decodedata.email },
@@ -183,12 +185,14 @@ exports.Resetpassword = async (req, res, next) => {
 exports.Logout = (req, res, next) => {
   res.clearCookie("Token", {
     httpOnly: true,
-    secure: false,
+    secure: true,
+    sameSite: "none",
   });
 
   res.clearCookie("RefreshToken", {
     httpOnly: true,
-    secure: false,
+    secure: true,
+    sameSite: "none",
   });
 
   return res.status(200).json({ message: "Logged out successfully" });
