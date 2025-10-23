@@ -14,8 +14,6 @@ let transporter = nodemailer.createTransport({
   },
 });
 
-
-
 exports.UserRegister = async (req, res, next) => {
   const { Firstname, Lastname, email, password } = req.body;
 
@@ -71,10 +69,6 @@ exports.UserRegister = async (req, res, next) => {
     });
   }
 };
-
-       
-
-
 
 //userLogin
 
@@ -133,7 +127,7 @@ exports.Forgotpassword = async (req, res, next) => {
       }
 
       const tokens = jwt.sign({ email: email }, process.env.NEW_SECREAT_KEY, {
-        expiresIn: "1m",
+        expiresIn: "2m",
       });
       let mailOptions = {
         from: process.env.USER,
@@ -167,9 +161,12 @@ exports.Resetpassword = async (req, res, next) => {
   try {
     const decodedata = jwt.verify(token, process.env.NEW_SECREAT_KEY);
 
+    const salt = await bcrypt.genSalt(10);
+    const encreptedpassword = await bcrypt.hash(password,salt);
+
     const user = await userDetailmodel.findOneAndUpdate(
       { email: decodedata.email },
-      { password: password },
+      { password: encreptedpassword },
       { new: true }
     );
     if (user) {
