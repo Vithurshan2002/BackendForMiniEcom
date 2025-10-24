@@ -134,8 +134,8 @@ exports.Forgotpassword = async (req, res, next) => {
       sender: { name: "Bitza", email: process.env.EMAIL },
       to: [{ email: email }],
       subject: "Forgot Password",
-      htmlContent: `<p>Click the link to reset your password:</p>
-                    <a href="https://bitza-ecom.vercel.app/resetPassword/${token}">Reset Password</a>`
+      htmlContent: `<p>Click the link to reset your password:
+                    <a href="https://bitza-ecom.vercel.app/resetPassword/${token}"><u>Reset Password<u/></a></p>`
     };
 
     const emailResponse = await axios.post(
