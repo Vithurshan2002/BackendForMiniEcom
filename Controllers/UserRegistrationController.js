@@ -1,18 +1,9 @@
 const userDetailmodel = require("../models/UserInforation");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
+const { default: axios } = require("axios");
 const userContactsmodel = require("../models/ContactMembers");
 const bcrypt = require("bcrypt");
 //register the student
-
-//i ue nodemaier for login and reset puposes..so insted of wrte twice i write in common place
-let transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.USER,
-    pass: process.env.PASS,
-  },
-});
 
 exports.UserRegister = async (req, res, next) => {
   const { Firstname, Lastname, email, password } = req.body;
@@ -44,18 +35,23 @@ exports.UserRegister = async (req, res, next) => {
       password: hashedPassword,
     });
 
-    const mailOptions = {
-      from: process.env.USER,
-      to: email,
+    const emaildata = {
+      sender: { name: "Bitza", email: process.env.EMAIL },
+      to: [{ email: email }],
       subject: "Registration Successful",
-      html: "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>BitZa - Registration Success</title><style>body{margin:0;height:100vh;display:flex;justify-content:center;align-items:center;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1950&q=80') no-repeat center center/cover;color:#fff}.card{background:rgba(0,0,0,0.55);border-radius:20px;padding:40px;width:90%;max-width:420px;text-align:center;backdrop-filter:blur(6px);box-shadow:0 8px 32px rgba(0,0,0,.4);animation:fadeInUp 1s ease}.icon{font-size:60px;color:#4ade80;margin-bottom:20px;animation:pop .6s ease}h1{font-size:2rem;margin-bottom:10px;font-weight:700}p{font-size:1rem;margin-bottom:25px;color:#e0e0e0}.btn{display:inline-block;padding:12px 25px;font-size:1rem;border-radius:30px;background:#4ade80;color:#111;font-weight:bold;text-decoration:none;transition:all .3s}.btn:hover{background:#22c55e;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3)}@keyframes fadeInUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}@keyframes pop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}</style></head><body><div class='card'><div class='icon'>✅</div><h1>Registration Successful!</h1><p>Thank you for registering with <strong>BitZa</strong>. Your account has been created successfully.</p><a href='http://localhost:5173/' class='btn'>Go to Login</a></div></body></html>",
+      htmlContent:
+        "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>BitZa - Registration Success</title><style>body{margin:0;height:100vh;display:flex;justify-content:center;align-items:center;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:url('https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=1950&q=80') no-repeat center center/cover;color:#fff}.card{background:rgba(0,0,0,0.55);border-radius:20px;padding:40px;width:90%;max-width:420px;text-align:center;backdrop-filter:blur(6px);box-shadow:0 8px 32px rgba(0,0,0,.4);animation:fadeInUp 1s ease}.icon{font-size:60px;color:#4ade80;margin-bottom:20px;animation:pop .6s ease}h1{font-size:2rem;margin-bottom:10px;font-weight:700}p{font-size:1rem;margin-bottom:25px;color:#e0e0e0}.btn{display:inline-block;padding:12px 25px;font-size:1rem;border-radius:30px;background:#4ade80;color:#111;font-weight:bold;text-decoration:none;transition:all .3s}.btn:hover{background:#22c55e;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3)}@keyframes fadeInUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}@keyframes pop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}</style></head><body><div class='card'><div class='icon'>✅</div><h1>Registration Successful!</h1><p>Thank you for registering with <strong>BitZa</strong>. Your account has been created successfully.</p><a href='https://bitza-ecom.vercel.app' class='btn'>Go to Login</a></div></body></html>",
     };
-
-   await transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Email sending error:", error.message);
+    const emailresponse = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      emaildata,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": process.env.APIKEY,
+        },
       }
-    });
+    );
 
     // Respond to client
     return res.status(200).json({
@@ -118,40 +114,50 @@ exports.UserLogin = async (req, res, next) => {
   }
 };
 
-//Forgotpassword
 exports.Forgotpassword = async (req, res, next) => {
   const { email } = req.body;
   try {
-    if (email) {
-      const user = await userDetailmodel.findOne({ email: email });
-      if (!user) {
-        return res.status(404).json({ message: "Email is not Exist" });
-      }
-
-      const tokens = jwt.sign({ email: email }, process.env.NEW_SECREAT_KEY, {
-        expiresIn: "5m",
-      });
-      let mailOptions = {
-        from: process.env.USER,
-        to: email,
-        subject: "Forgotpassword",
-        text: `https://bitza-ecom.vercel.app/resetPassword/${tokens}`,
-      };
-
-      transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-          return res.status(400).json({ message: error.message });
-        } else {
-          return res.status(200).json({ message: "Email Sent" });
-        }
-      });
-    } else {
-      res.status(404).json({
-        message: "Enter the Email",
-      });
+    if (!email) {
+      return res.status(400).json({ message: "Enter the Email" });
     }
+
+    const user = await userDetailmodel.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ message: "Email does not exist" });
+    }
+
+    const token = jwt.sign({ email: email }, process.env.NEW_SECREAT_KEY, {
+      expiresIn: "5m",
+    });
+
+    const emailData = {
+      sender: { name: "Bitza", email: process.env.EMAIL },
+      to: [{ email: email }],
+      subject: "Forgot Password",
+      htmlContent: `<p>Click the link to reset your password:</p>
+                    <a href="https://bitza-ecom.vercel.app/resetPassword/${token}">Reset Password</a>`
+    };
+
+    const emailResponse = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      emailData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": process.env.APIKEY,
+        },
+      }
+    );
+
+    if (emailResponse.status === 201) {
+      return res.status(200).json({ message: "Email Sent Successfully" });
+    } else {
+      return res.status(500).json({ message: "Failed to send email" });
+    }
+
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Forgotpassword Error:", error);
+    res.status(500).json({ message: error.message });
   }
 };
 
